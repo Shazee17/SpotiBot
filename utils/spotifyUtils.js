@@ -66,9 +66,50 @@ export const getSongRecommendations = async (trackName, accessToken) => {
             },
         });
 
+        console.log(recommendations.data.tracks);
         return recommendations.data.tracks;  // Return the recommended tracks
     } catch (error) {
         console.error('Error getting song recommendations:', error);
         return [];
     }
+};
+
+
+// Function to get a random track using a random letter
+export const getRandomTrack = async (accessToken) => {
+  try {
+      // Generate a random letter or string for the search query
+      const randomLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26)); // Random letter from 'a' to 'z'
+
+      // Search for tracks with the random letter
+      const searchResponse = await axios.get('https://api.spotify.com/v1/search', {
+          headers: {
+              Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+              q: randomLetter,
+              type: 'track',
+              limit: 50, // You can adjust the limit to get more tracks
+          },
+      });
+
+      const tracks = searchResponse.data.tracks.items;
+
+      if (tracks.length === 0) {
+          console.log('No tracks found for this query.');
+          return null;
+      }
+
+      // Pick a random track from the list
+      const randomIndex = Math.floor(Math.random() * tracks.length);
+      const randomTrack = tracks[randomIndex];
+
+      console.log(`Random Track Name: ${randomTrack.name} by ${randomTrack.artists.map(artist => artist.name).join(', ')}`);
+      console.log(`Track ID: ${randomTrack.id}`);
+      
+      return randomTrack;
+  } catch (error) {
+      console.error('Error getting random track:', error);
+      return null;
+  }
 };
