@@ -8,6 +8,11 @@ const commands = [
     name: 'ping',
     description: 'Replies with Pong!',
   },
+
+  {
+    name: 'random',
+    description: 'Get a random track from Spotify',
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
