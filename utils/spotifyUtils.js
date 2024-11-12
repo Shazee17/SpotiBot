@@ -66,7 +66,6 @@ export const getSongRecommendations = async (trackName, accessToken) => {
             },
         });
 
-        console.log(recommendations.data.tracks);
         return recommendations.data.tracks;  // Return the recommended tracks
     } catch (error) {
         console.error('Error getting song recommendations:', error);
@@ -113,3 +112,46 @@ export const getRandomTrack = async (accessToken) => {
       return null;
   }
 };
+
+
+
+//Function to get details of a track
+export const getTrackDetails = async (trackName, accessToken) => {
+    try {
+        const trackId = await getTrackId(trackName, accessToken);
+        if (!trackId) {
+            console.error("Track not found");
+            return null;
+        }
+
+
+        const response = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        })
+
+       
+        const trackDetails = response.data;
+
+        return {
+            name: trackDetails.name,
+            album: trackDetails.album.name,
+            artist: trackDetails.artists.map(artist => artist.name).join(", "),
+            releaseDate: trackDetails.album.release_date,
+            duration: (trackDetails.duration_ms / 60000).toFixed(2), // Convert ms to minutes
+            previewUrl: trackDetails.preview_url,
+            spotifyLink: trackDetails.external_urls.spotify,
+            popularity: trackDetails.popularity,
+
+            // Access the first image's URL or the last one for higher resolution
+            imageUrl: trackDetails.album.images[0]?.url // Get the first image URL
+        };
+        
+    } catch (error) {
+        console.error('Error getting track details:', error);
+      return null;
+    }
+}
+
+

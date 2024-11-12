@@ -4,12 +4,9 @@ import { getSpotifyAccessToken, getSongRecommendations, getRandomTrack } from ".
 export default (client) => {
     client.on("interactionCreate", async (interaction) => {
       if (!interaction.isChatInputCommand()) return;
-  
-      if (interaction.commandName === 'ping') {
-        await interaction.reply('Pong!');
-      }
 
-      
+
+      //Interaction to reply with a random song
       if (interaction.commandName === 'random') {
         // Defer the reply to acknowledge the interaction (optional)
         await interaction.deferReply();

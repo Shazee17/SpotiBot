@@ -3,12 +3,7 @@ dotenv.config();
 
 import { REST, Routes } from 'discord.js';
 
-const commands = [
-  {
-    name: 'ping',
-    description: 'Replies with Pong!',
-  },
-
+const commands = [ 
   {
     name: 'random',
     description: 'Get a random track from Spotify',
