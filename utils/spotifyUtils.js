@@ -194,7 +194,6 @@ export const getArtistDetails = async (artistName, accessToken) => {
         });
 
         const artistDetails = artistResponse.data;
-        console.log(artistDetails);
 
         // Get artist's top tracks
         const topTracksResponse = await axios.get(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {

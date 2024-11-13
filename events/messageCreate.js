@@ -156,30 +156,31 @@ export default (client) => {
       message.channel.send({ embeds: [trackEmbed] });
     }
 
-    //Command For Artist Details
-    if (lowerCaseContent.startsWith(`${prefix1}artist`)) {
+    // Command for Artist Details
+if (lowerCaseContent.startsWith(`${prefix1}artist`)) {
+    try {
       const artistName = message.content.split(/spoti\.artist\s+/i)[1];
-
+  
       if (!artistName) {
         return message.reply("Please provide an artist name!");
       }
-
+  
       const accessToken = await getSpotifyAccessToken();
-      if (!accessToken)
+      if (!accessToken) {
         return message.reply("Could not retrieve Spotify access token.");
-
+      }
+  
       const artistDetails = await getArtistDetails(artistName, accessToken);
-      if (!artistDetails)
+      if (!artistDetails) {
         return message.reply("Could not find the artist details.");
-
+      }
+  
       const artistEmbed = new EmbedBuilder()
         .setColor("#1DB954")
         .setTitle(artistDetails.name || "Unknown Artist")
         .setURL(artistDetails.spotifyLink || "#")
         .setDescription(
-          `**Genres**: ${artistDetails.genres}
-**Popularity**: ${artistDetails.popularity || "N/A"}/100
-**Followers**: ${
+          `**Genres**: ${artistDetails.genres || "N/A"}\n**Popularity**: ${artistDetails.popularity || "N/A"}/100\n**Followers**: ${
             artistDetails.followers
               ? artistDetails.followers.toLocaleString()
               : "N/A"
@@ -187,49 +188,41 @@ export default (client) => {
         )
         .setThumbnail(artistDetails.imageUrl || "")
         .setFooter({ text: "Powered by Spotify" });
-
+  
       // Add top tracks if available
-      if (
-        Array.isArray(artistDetails.topTracks) &&
-        artistDetails.topTracks.length > 0
-      ) {
+      if (Array.isArray(artistDetails.topTracks) && artistDetails.topTracks.length > 0) {
         artistEmbed.addFields({
           name: "Top Tracks",
           value: artistDetails.topTracks
             .map(
               (track, index) =>
-                `${index + 1}. [${track.name || "Unknown"}](${
-                  track.spotifyLink || "#"
-                }) - ${track.album || "Unknown"} (${
-                  track.duration || "N/A"
-                } mins)`
+                `${index + 1}. [${track.name || "Unknown"}](${track.spotifyLink || "#"})`
             )
             .join("\n"),
         });
       }
-
+  
       // Add albums if available
-      if (
-        Array.isArray(artistDetails.albums) &&
-        artistDetails.albums.length > 0
-      ) {
+      if (Array.isArray(artistDetails.albums) && artistDetails.albums.length > 0) {
         artistEmbed.addFields({
           name: "Albums",
           value: artistDetails.albums
             .map(
               (album, index) =>
-                `${index + 1}. [${album.name || "Unknown"}](${
-                  album.spotifyLink || "#"
-                }) - Released: ${album.releaseDate || "N/A"} (${
-                  album.totalTracks || "N/A"
-                } tracks)`
+                `${index + 1}. [${album.name || "Unknown"}](${album.spotifyLink || "#"}) (${album.totalTracks || "N/A"} tracks)`
             )
             .join("\n"),
         });
       }
-
+  
       // Send the embed
       message.channel.send({ embeds: [artistEmbed] });
+  
+    } catch (error) {
+      console.error("Error fetching artist details:", error);
+      return message.reply("An error occurred while fetching artist details. Please try again later.");
     }
+  }
+  
   });
 };
