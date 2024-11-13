@@ -21,3 +21,7 @@ interactionCreateHandler(client);
 
 // Log in to Discord with your bot's token
 client.login(process.env.BOT_TOKEN);
+
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+})
