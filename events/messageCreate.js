@@ -32,6 +32,10 @@ export default (client) => {
             value: "Get detailed information about a specific song.",
           },
           {
+            name: "spoti.artist [artist name]",
+            value: "Get detailed information about a specific artist.",
+          },
+          {
             name: "spoti.help",
             value: "Shows this help message with a list of available commands.",
           }
