@@ -10,6 +10,7 @@ SpotiBot is a simple and interactive Discord bot that provides music recommendat
 - **`spoti.random`**: Get a random song from Spotify.
 - **`spoti.details [song name]`**: Get detailed information about a specific song.
 - **`spoti.artist [artist name]`**: Get detailed information about a specific artist.
+- **`spoti.album [album name]`**: Get detailed information about a specific album.
 - **`spoti.help`**: Displays a help message with all available commands.
 
 ## Installation

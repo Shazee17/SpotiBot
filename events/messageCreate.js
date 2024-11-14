@@ -1,4 +1,4 @@
-import { auth, track, artist } from '../utils/spotify/index.js';
+import { auth, track, artist, album } from '../utils/spotify/index.js';
 import { EmbedBuilder } from "discord.js"; // Updated import
 
 export default (client) => {
@@ -28,6 +28,10 @@ export default (client) => {
           {
             name: "spoti.artist [artist name]",
             value: "Get detailed information about a specific artist.",
+          },
+          {
+            name: "spoti.album [album name]",
+            value: "Get detailed information about a specific album.",
           },
           {
             name: "spoti.help",
@@ -217,6 +221,63 @@ if (lowerCaseContent.startsWith(`${prefix1}artist`)) {
       return message.reply("An error occurred while fetching artist details. Please try again later.");
     }
   }
+
+
+ // Command for album details
+if (lowerCaseContent.startsWith(`${prefix1}album`)) {
+  try {
+    const albumName = message.content.split(/spoti\.album\s+/i)[1];
+    if (!albumName) return message.reply("Please provide an album name!");
+
+    const accessToken = await auth.getSpotifyAccessToken();
+    if (!accessToken)
+      return message.reply("Could not retrieve Spotify access token.");
+
+    const albumDetails = await album.getAlbumDetails(albumName, accessToken);
+    if (!albumDetails)
+      return message.reply("Could not find the album details.");
+
+    const albumEmbed = new EmbedBuilder()
+      .setColor("#1DB954")
+      .setTitle(albumDetails.album.name || "Unknown Album")
+      .setURL(albumDetails.album.spotifyLink || "#")
+      .setDescription(`Artist: ${albumDetails.album.artist || "Unknown Artist"}`)
+      .addFields(
+        {
+          name: "Release Date",
+          value: albumDetails.album.releaseDate ? String(albumDetails.album.releaseDate) : "N/A", // Ensure it's a string
+          inline: true,
+        },
+        {
+          name: "Total Tracks",
+          value: albumDetails.album.totalTracks ? String(albumDetails.album.totalTracks) : "N/A", // Ensure it's a string
+          inline: true,
+        }
+      )
+      .setThumbnail(albumDetails.album.imageUrl || "")
+      .setFooter({ text: "Powered by Spotify" });
+
+    // Add track list if available
+    if (Array.isArray(albumDetails.tracks) && albumDetails.tracks.length > 0) {
+      albumEmbed.addFields({
+        name: "Tracks",
+        value: albumDetails.tracks
+          .map(
+            (track, index) =>
+              `${index + 1}. [${track.name || "Unknown"}](${track.spotifyLink || "#"})`
+          )
+          .join("\n"),
+      });
+    }
+
+    // Send the embed
+    message.channel.send({ embeds: [albumEmbed] });
+  } catch (error) {
+    console.error("Error fetching album details:", error);
+    message.reply("An error occurred while fetching the album details. Please try again later.");
+  }
+}
+
   
   });
 };
