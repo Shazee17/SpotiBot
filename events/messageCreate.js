@@ -1,10 +1,4 @@
-import {
-  getSpotifyAccessToken,
-  getSongRecommendations,
-  getRandomTrack,
-  getTrackDetails,
-  getArtistDetails,
-} from "../utils/spotifyUtils.js";
+import { auth, track, artist } from '../utils/spotify/index.js';
 import { EmbedBuilder } from "discord.js"; // Updated import
 
 export default (client) => {
@@ -50,11 +44,11 @@ export default (client) => {
       const songName = message.content.split(/spoti\.recommend\s+/i)[1];
       if (!songName) return message.reply("Please provide a song name!");
 
-      const accessToken = await getSpotifyAccessToken();
+      const accessToken = await auth.getSpotifyAccessToken();
       if (!accessToken)
         return message.reply("Could not retrieve Spotify access token.");
 
-      const recommendations = await getSongRecommendations(
+      const recommendations = await track.getSongRecommendations(
         songName,
         accessToken
       );
@@ -89,11 +83,11 @@ export default (client) => {
 
     // Command for random track
     if (lowerCaseContent.startsWith(`${prefix1}random`)) {
-      const accessToken = await getSpotifyAccessToken();
+      const accessToken = await auth.getSpotifyAccessToken();
       if (!accessToken)
         return message.reply("Could not retrieve Spotify access token.");
 
-      const randomTrack = await getRandomTrack(accessToken);
+      const randomTrack = await track.getRandomTrack(accessToken);
       if (!randomTrack) {
         return message.reply("Could not find a random track.");
       }
@@ -119,11 +113,11 @@ export default (client) => {
       const songName = message.content.split(/spoti\.details\s+/i)[1];
       if (!songName) return message.reply("Please provide a song name!");
 
-      const accessToken = await getSpotifyAccessToken();
+      const accessToken = await auth.getSpotifyAccessToken();
       if (!accessToken)
         return message.reply("Could not retrieve Spotify access token.");
 
-      const trackDetails = await getTrackDetails(songName, accessToken);
+      const trackDetails = await track.getTrackDetails(songName, accessToken);
       if (!trackDetails)
         return message.reply("Could not find the track details.");
 
@@ -165,12 +159,12 @@ if (lowerCaseContent.startsWith(`${prefix1}artist`)) {
         return message.reply("Please provide an artist name!");
       }
   
-      const accessToken = await getSpotifyAccessToken();
+      const accessToken = await auth.getSpotifyAccessToken();
       if (!accessToken) {
         return message.reply("Could not retrieve Spotify access token.");
       }
   
-      const artistDetails = await getArtistDetails(artistName, accessToken);
+      const artistDetails = await artist.getArtistDetails(artistName, accessToken);
       if (!artistDetails) {
         return message.reply("Could not find the artist details.");
       }

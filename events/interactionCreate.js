@@ -1,4 +1,4 @@
-import { getSpotifyAccessToken, getSongRecommendations, getRandomTrack } from "../utils/spotifyUtils.js";
+import { auth, track, artist } from '../utils/spotify/index.js';
 
 
 export default (client) => {
@@ -12,13 +12,13 @@ export default (client) => {
         await interaction.deferReply();
   
         // Get the Spotify access token
-        const accessToken = await getSpotifyAccessToken();
+        const accessToken = await auth.getSpotifyAccessToken();
         if (!accessToken) {
           return interaction.editReply('Could not retrieve Spotify access token.');
         }
   
         // Get a random track
-        const randomTrack = await getRandomTrack(accessToken);
+        const randomTrack = await track.getRandomTrack(accessToken);
   
         if (!randomTrack) {
           return interaction.editReply('Could not find a random track.');
