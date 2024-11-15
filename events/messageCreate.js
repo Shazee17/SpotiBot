@@ -1,5 +1,6 @@
 import { auth, track, artist, album } from '../utils/spotify/index.js';
-import { EmbedBuilder } from "discord.js"; // Updated import
+import { getLyrics } from '../utils/lyrics.js';
+import { EmbedBuilder } from "discord.js";
 
 export default (client) => {
   client.on("messageCreate", async (message) => {
@@ -32,6 +33,10 @@ export default (client) => {
           {
             name: "spoti.album [album name]",
             value: "Get detailed information about a specific album.",
+          },
+          {
+            name: "spoti.lyrics [song name] by [artist name]",
+            value: "Get lyrics of the provided song.",
           },
           {
             name: "spoti.help",
@@ -278,6 +283,37 @@ if (lowerCaseContent.startsWith(`${prefix1}album`)) {
   }
 }
 
+// Command for song lyrics
+if (lowerCaseContent.startsWith(`${prefix1}lyrics`)) {
+  const input = message.content.split(/spoti\.lyrics\s+/i)[1];
+  if (!input) return message.reply("Please provide a song name and artist!");
+
+  // Extract song name and artist name
+  const [songName, artistName] = input.split(' by ');
+  if (!songName || !artistName) {
+    return message.reply("Please use the format: spoti.lyrics [song name] by [artist name]");
+  }
+
+  try {
+    const lyrics = await getLyrics(artistName.trim(), songName.trim());
+    
+    if (!lyrics) {
+      return message.reply(`Could not find lyrics for "${songName}" by ${artistName}`);
+    }
+
+    // Creating a response embed
+    const lyricsEmbed = new EmbedBuilder()
+      .setColor("#1DB954")
+      .setTitle(`Lyrics for "${songName}" by ${artistName}`)
+      .setDescription(lyrics.slice(0, 4096)) // Truncate if lyrics exceed 4096 characters
+      .setFooter({ text: "Powered by Lyrics.ovh" });
+
+    message.channel.send({ embeds: [lyricsEmbed] });
+  } catch (error) {
+    console.error("Error fetching lyrics:", error);
+    message.reply("An error occurred while fetching the lyrics. Please try again later.");
+  }
+}
   
   });
 };
