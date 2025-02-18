@@ -62,7 +62,7 @@ export default (client) => {
         accessToken
       );
       if (recommendations.length === 0) {
-        return message.reply("Could not find any recommendations.");
+        return message.reply("We're sorry, but song recommendations are currently unavailable due to changes in Spotify's API. Please try another command or check back later.");
       }
 
       const recommendationsEmbed = new EmbedBuilder()
